@@ -1,8 +1,16 @@
 <?php
+session_start();
 require_once 'db.php';
 
 header('Content-Type: application/json');
 
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(["success" => false, "message" => "Unauthorized"]);
+    exit;
+}
+
+// Fetch posts with like count
 $sql = "SELECT posts.id, posts.user_id, posts.content, posts.created_at, 
                (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS likes_count 
         FROM posts 
@@ -21,3 +29,4 @@ if ($result->num_rows > 0) {
 }
 
 $conn->close();
+
